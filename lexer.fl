@@ -1,0 +1,74 @@
+%{
+    #include <stdio.h>
+    #include <stdlib.h>
+    #include "parser.tab.h"
+    #include "symbol.tab.h"
+
+    FILE *yyin;
+%}
+
+%option yylineno
+%option noyywrap
+
+digit           [0-9]
+nonzerodigit    [1-9]
+number          {digit}+
+letter          [A-Za-z]
+word            {letter}+
+name            [A-Z]{letter}+
+date            (0[1-9]|10|11|12)\/[0-9]{4}
+email           [a-z0-9._%+]+@[a-z0-9.]+\.[a-z]{2,4}
+fiscalcode      [A-Z]{6}[0-9]{2}[A-Z][0-9]{2}[A-Z][0-9]{3}[A-Z]
+telephone       [1-9][0-9]{9}
+millesimal      ([1-9][0-9]{0,2}|1000)
+whitespace      [ ]
+
+%%
+
+    /* Riconoscimento separatori */
+
+"&&&&&"                                 { return(SEPARATOR_1); }
+"$$$$$"                                 { return(SEPARATOR_2);}
+
+
+    /* Riconoscimento sezione 1 (data) */
+
+{date}                                  { yylval.string = strdup(yytext); return(DATE); }
+
+
+    /* Riconoscimento sezione 2 (spese di condominio) */
+
+{word}                                  { yylval.string = strdup(yytext); return(EXPENSE); }
+{nonzerodigit}{number}\.{number}        { yylval.float_t = atof(yytext); return(NUM_REAL); } 
+
+
+    /* Riconoscimento sezione 3 (dati dei condomini) */
+
+{name}{whitespace}{name}                { yylval.string = strdup(yytext); return(NAME); }
+{email}                                 { yylval.string = strdup(yytext); return(EMAIL); }
+{fiscalcode}                            { yylval.string = strdup(yytext); return(FISCALCODE); }
+{telephone}                             { yylval.string = strdup(yytext); return(TELEPHONE); }
+{digit}                                 { yylval.int_t = atoi(yytext); return(UNIT); }
+{millesimal}                            { yylval.int_t = atoi(yytext); return(MILLESIMAL); }
+
+
+"-"                                     { return(DASH); }
+[ \t\n]+                                { }
+
+%%
+
+int main(int argc, char *argv[])
+{
+    yyin = fopen(argv[1], "r");
+
+    initialize();
+
+    yyparse();
+    yylex();
+
+    fclose(yyin);
+
+    print();
+
+    return 0;
+}

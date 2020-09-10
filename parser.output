@@ -1,0 +1,215 @@
+Grammar
+
+    0 $accept: Start $end
+
+    1 Start: section1 SEPARATOR_1 section2 SEPARATOR_2 section3
+
+    2 section1: DATE
+
+    3 section2: section2 EXPENSE NUM_REAL
+    4         | %empty
+
+    5 section3: section3 NAME DASH FISCALCODE DASH EMAIL DASH TELEPHONE DASH MILLESIMAL DASH UNIT
+    6         | %empty
+
+
+Terminals, with rules where they appear
+
+    $end (0) 0
+    error (256)
+    NUM_REAL <float_t> (258) 3
+    MILLESIMAL <int_t> (259) 5
+    UNIT <int_t> (260) 5
+    DATE <string> (261) 2
+    EXPENSE <string> (262) 3
+    NAME <string> (263) 5
+    EMAIL <string> (264) 5
+    FISCALCODE <string> (265) 5
+    TELEPHONE <string> (266) 5
+    DASH (267) 5
+    SEPARATOR_1 (268) 1
+    SEPARATOR_2 (269) 1
+
+
+Nonterminals, with rules where they appear
+
+    $accept (15)
+        on left: 0
+    Start (16)
+        on left: 1
+        on right: 0
+    section1 (17)
+        on left: 2
+        on right: 1
+    section2 (18)
+        on left: 3 4
+        on right: 1 3
+    section3 (19)
+        on left: 5 6
+        on right: 1 5
+
+
+State 0
+
+    0 $accept: . Start $end
+
+    DATE  shift, and go to state 1
+
+    Start     go to state 2
+    section1  go to state 3
+
+
+State 1
+
+    2 section1: DATE .
+
+    $default  reduce using rule 2 (section1)
+
+
+State 2
+
+    0 $accept: Start . $end
+
+    $end  shift, and go to state 4
+
+
+State 3
+
+    1 Start: section1 . SEPARATOR_1 section2 SEPARATOR_2 section3
+
+    SEPARATOR_1  shift, and go to state 5
+
+
+State 4
+
+    0 $accept: Start $end .
+
+    $default  accept
+
+
+State 5
+
+    1 Start: section1 SEPARATOR_1 . section2 SEPARATOR_2 section3
+
+    $default  reduce using rule 4 (section2)
+
+    section2  go to state 6
+
+
+State 6
+
+    1 Start: section1 SEPARATOR_1 section2 . SEPARATOR_2 section3
+    3 section2: section2 . EXPENSE NUM_REAL
+
+    EXPENSE      shift, and go to state 7
+    SEPARATOR_2  shift, and go to state 8
+
+
+State 7
+
+    3 section2: section2 EXPENSE . NUM_REAL
+
+    NUM_REAL  shift, and go to state 9
+
+
+State 8
+
+    1 Start: section1 SEPARATOR_1 section2 SEPARATOR_2 . section3
+
+    $default  reduce using rule 6 (section3)
+
+    section3  go to state 10
+
+
+State 9
+
+    3 section2: section2 EXPENSE NUM_REAL .
+
+    $default  reduce using rule 3 (section2)
+
+
+State 10
+
+    1 Start: section1 SEPARATOR_1 section2 SEPARATOR_2 section3 .
+    5 section3: section3 . NAME DASH FISCALCODE DASH EMAIL DASH TELEPHONE DASH MILLESIMAL DASH UNIT
+
+    NAME  shift, and go to state 11
+
+    $default  reduce using rule 1 (Start)
+
+
+State 11
+
+    5 section3: section3 NAME . DASH FISCALCODE DASH EMAIL DASH TELEPHONE DASH MILLESIMAL DASH UNIT
+
+    DASH  shift, and go to state 12
+
+
+State 12
+
+    5 section3: section3 NAME DASH . FISCALCODE DASH EMAIL DASH TELEPHONE DASH MILLESIMAL DASH UNIT
+
+    FISCALCODE  shift, and go to state 13
+
+
+State 13
+
+    5 section3: section3 NAME DASH FISCALCODE . DASH EMAIL DASH TELEPHONE DASH MILLESIMAL DASH UNIT
+
+    DASH  shift, and go to state 14
+
+
+State 14
+
+    5 section3: section3 NAME DASH FISCALCODE DASH . EMAIL DASH TELEPHONE DASH MILLESIMAL DASH UNIT
+
+    EMAIL  shift, and go to state 15
+
+
+State 15
+
+    5 section3: section3 NAME DASH FISCALCODE DASH EMAIL . DASH TELEPHONE DASH MILLESIMAL DASH UNIT
+
+    DASH  shift, and go to state 16
+
+
+State 16
+
+    5 section3: section3 NAME DASH FISCALCODE DASH EMAIL DASH . TELEPHONE DASH MILLESIMAL DASH UNIT
+
+    TELEPHONE  shift, and go to state 17
+
+
+State 17
+
+    5 section3: section3 NAME DASH FISCALCODE DASH EMAIL DASH TELEPHONE . DASH MILLESIMAL DASH UNIT
+
+    DASH  shift, and go to state 18
+
+
+State 18
+
+    5 section3: section3 NAME DASH FISCALCODE DASH EMAIL DASH TELEPHONE DASH . MILLESIMAL DASH UNIT
+
+    MILLESIMAL  shift, and go to state 19
+
+
+State 19
+
+    5 section3: section3 NAME DASH FISCALCODE DASH EMAIL DASH TELEPHONE DASH MILLESIMAL . DASH UNIT
+
+    DASH  shift, and go to state 20
+
+
+State 20
+
+    5 section3: section3 NAME DASH FISCALCODE DASH EMAIL DASH TELEPHONE DASH MILLESIMAL DASH . UNIT
+
+    UNIT  shift, and go to state 21
+
+
+State 21
+
+    5 section3: section3 NAME DASH FISCALCODE DASH EMAIL DASH TELEPHONE DASH MILLESIMAL DASH UNIT .
+
+    $default  reduce using rule 5 (section3)
